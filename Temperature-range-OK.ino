@@ -16,52 +16,89 @@ void setup(void) {
 }
 
 void loop(void) {
+  //functions
   float temperature = getTemp();
-
-  boolean flag = statetemp(temperature);
-
-  if (flag == true){
-      myNextion.listen();
-      myNextion.sendCommand("p0.pic=0"); 
+  int flag = statetemp(temperature);
+  boolean o;
+  int i;
+  //String boton = "a";
+  String message = myNextion.listen();
   
+  //Turn on notifications
+  if (message == "65 0 1 0 ffff ffff ffff"){
+         
+         //turn on notifications                        
+           
+              if (flag == 1){
+                //temp normal
+                myNextion.listen();
+                myNextion.sendCommand("p0.pic=6");
+                myNextion.sendCommand("p1.pic=5"); 
+  
+              }
+              else if (flag == 2){
+                //temp hot
+                myNextion.listen();
+                myNextion.sendCommand("p0.pic=0");
+                myNextion.sendCommand("p1.pic=3"); 
+                }
+              else if (flag == 3){
+                //temp cold
+                myNextion.listen();
+                myNextion.sendCommand("p0.pic=2");
+                myNextion.sendCommand("p1.pic=4");
+              }
+              myNextion.sendCommand("p2.pic=12");
   }
-  else if (flag == false){
-      myNextion.listen();
-      myNextion.sendCommand("p0.pic=1"); 
-  }
-
+  if (message == "65 0 5 0 ffff ffff ffff"){
+     //turned off
+     o=false;
+     myNextion.listen();
+     myNextion.sendCommand("p0.pic=6");
+     myNextion.sendCommand("p1.pic=5");   
+     myNextion.sendCommand("p2.pic=11");                                             
+  }  
+     
+  
  //print on Nextion
  myNextion.listen();
  myNextion.setComponentText("t0",String(temperature));
- myNextion.setComponentText("t1",String(flag));
- 
+  
  Serial.println(temperature);
  delay(1000); //just here to slow down the output so it is easier to read
 
  }
-
-boolean statetemp(float temp){
+ 
+int statetemp(float temp){
  //llamado a valor de temp para obtener mascarado
  float temperature = temp;
  // Validaciones
- boolean flag; 
+ int flag; 
  int a,b,c,d;
- a=15;
- b=25;
- c=30;
- d=14;
+// a=15;
+// b=28;
+// c=30;
+// d=39; 
+ a=26;
+ b=30;
+ c=35;
+ 
 
- if (int(temperature) <= b) {
-    flag = true;
+ if (int(temperature) >= a && int(temperature) <=b) {
+    flag = 1;
  }
-
-else if (int(temperature) > c){
+else if (int(temperature) >= c ){
     //temperature is higher than 31 degrees, the Nextion shows alert
-    flag = false;
+    flag = 2;
  }  
+ else if (int(temperature) < a){
+    flag = 3;
+ }
+ 
   return flag;  
   
 }
+
 
 //---------------------------------------------------------------------------------------------------------------------------//
 
