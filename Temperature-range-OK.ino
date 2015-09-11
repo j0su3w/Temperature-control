@@ -23,11 +23,24 @@ void loop(void) {
   int i;
   //String boton = "a";
   String message = myNextion.listen();
+  o = false;
   
   //Turn on notifications
   if (message == "65 0 1 0 ffff ffff ffff"){
-         
-         //turn on notifications                        
+    o = true;
+  }
+         while (message == "65 0 1 0 ffff ffff ffff"){
+         //turn on notifications  
+         float temperature = getTemp();
+         int flag = statetemp(temperature);
+         //turn off
+         myNextion.listen();
+         if (message == "65 0 5 0 ffff ffff ffff"){
+                o = false;
+                myNextion.sendCommand("p0.pic=6");
+                myNextion.sendCommand("p1.pic=5");   
+                myNextion.sendCommand("p2.pic=11");
+         }
            
               if (flag == 1){
                 //temp normal
@@ -49,15 +62,21 @@ void loop(void) {
                 myNextion.sendCommand("p1.pic=4");
               }
               myNextion.sendCommand("p2.pic=12");
-  }
+
+              myNextion.listen();
+              myNextion.setComponentText("t0",String(temperature));
+                     
+              
+              delay(1000);
+          }
   if (message == "65 0 5 0 ffff ffff ffff"){
      //turned off
      o=false;
      myNextion.listen();
      myNextion.sendCommand("p0.pic=6");
      myNextion.sendCommand("p1.pic=5");   
-     myNextion.sendCommand("p2.pic=11");                                             
-  }  
+     myNextion.sendCommand("p2.pic=11");
+   }  
      
   
  //print on Nextion
